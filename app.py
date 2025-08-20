@@ -23,14 +23,11 @@ from io import StringIO
 import csv
 
 # ---------------- App Setup ----------------
+
 app = Flask(__name__, static_folder="static", template_folder="templates")
 app.config.from_object(Config)
 
 db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()  # Creates all tables defined by your SQLAlchemy models
-    print("✅ Tables created successfully")
-
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
@@ -39,6 +36,8 @@ GOLD_RATE_FILE = "gold_rate.json"
 
 # ---------------- Models ----------------
 class User(UserMixin, db.Model):
+    __tablename__ = "users"  # Avoid reserved keyword 'user'
+
     id = db.Column(db.Integer, primary_key=True)
     shop_name = db.Column(db.String(120), nullable=False)
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
@@ -68,6 +67,8 @@ class User(UserMixin, db.Model):
 
 
 class Jewelry(db.Model):
+    __tablename__ = "jewelries"
+
     id = db.Column(db.Integer, primary_key=True)
     unique_id = db.Column(db.String(20), unique=True, nullable=False, index=True)
     weight_g = db.Column(db.Float, nullable=False)
@@ -75,7 +76,7 @@ class Jewelry(db.Model):
     description = db.Column(db.Text, nullable=True)
     photo_path = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     def to_dict(self):
         return {
@@ -86,6 +87,10 @@ class Jewelry(db.Model):
             "labor_cost": self.labor_cost,
             "created_at": self.created_at
         }
+
+with app.app_context():
+    db.create_all()
+    print("✅ Tables created successfully")
 
 
 # ---------------- Login Loader ----------------
@@ -391,6 +396,7 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
+
 
 
 
