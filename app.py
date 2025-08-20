@@ -89,9 +89,6 @@ class Jewelry(db.Model):
         }
 
 with app.app_context():
-    db.create_all()
-
-    # Auto-create admin if not exists
     from app import User  # make sure User is imported
     admin_username = os.environ.get("ADMIN_USERNAME", "admin")
     admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
@@ -105,7 +102,6 @@ with app.app_context():
         print(f"✅ Admin created: {admin_username}/{admin_password}")
     else:
         print(f"✅ Admin already exists: {admin_username}")
-
 
 
 # ---------------- Login Loader ----------------
@@ -411,6 +407,7 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
+
 
 
 
