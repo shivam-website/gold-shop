@@ -336,7 +336,8 @@ def update_silver_rate():
 @login_required
 def mark_sold(item_id):
     item = Jewelry.query.get_or_404(item_id) # Retrieve by integer ID
-    if item.owner.id != current_user.id: # Ensure owner can mark their own item
+    # Allow owner OR admin to mark as sold
+    if item.owner.id != current_user.id and not current_user.is_admin:
         abort(403)
     item.is_sold = True
     db.session.commit()
@@ -493,6 +494,7 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
+
 
 
 
