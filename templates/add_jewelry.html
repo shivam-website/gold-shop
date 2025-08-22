@@ -4,7 +4,8 @@
 <h2>Add Jewelry</h2>
 <form method="post" enctype="multipart/form-data" class="form">
   {{ form.hidden_tag() }}
-  <label>Weight (grams) {{ form.weight_g(step="0.01") }}</label>
+  <label>Material Type {{ form.material_type(class="form-select") }}</label>
+  <label>Weight (Tola) {{ form.weight_tola(step="0.01") }}</label>
   <label>Labor Cost {{ form.labor_cost(step="0.01") }}</label>
   <label>Description {{ form.description(rows="3") }}</label>
   <label>Photo (optional) <input type="file" name="photo" accept="image/*"></label>
