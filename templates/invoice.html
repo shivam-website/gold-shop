@@ -259,7 +259,14 @@
       </form>
     </div>
 
-    <button class="btn no-print" onclick="window.print()">Print</button>
+    <div class="invoice-actions no-print" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+      <button class="btn" onclick="window.print()">Print</button>
+      {% if not item.is_sold %}
+        <form method="post" action="{{ url_for('mark_sold', item_id=item.id) }}" class="invoice-mark-sold-form"> {# Removed inline style #}
+          <button type="submit" class="btn success invoice-mark-sold-btn">Mark Sold</button> {# Removed inline style #}
+        </form>
+      {% endif %}
+    </div>
   </div>
 </body>
 </html>
