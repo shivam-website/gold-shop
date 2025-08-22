@@ -15,6 +15,101 @@
   <button type="submit" class="btn">Create</button>
 </form>
 
+<h3 style="margin-top: 30px;">Your Current Rates (Per Tola)</h3>
+<p style="color:white;">These are your personal admin shop's rates, not global defaults for other shops.</p>
+<div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+  <div style="flex: 1; min-width: 250px; padding: 15px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
+    <h4 style="margin-bottom: 10px;">Gold Rate: <span id="currentGoldRate" style="color: green;">{{ "%.2f"|format(admin_gold_rate) or '70000.00' }}</span> NPR/tola</h4>
+    <input type="number" id="goldRateAdmin" placeholder="Enter new gold rate" step="0.01" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 10px;">
+    <button class="btn small" onclick="updateGoldRate()" style="width: 100%; background-color: #28a745;">Update Gold Rate</button>
+    <p id="goldRateMessage" style="margin-top: 5px; font-size: 0.9em; color: green;"></p>
+  </div>
+  <div style="flex: 1; min-width: 250px; padding: 15px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9;">
+    <h4 style="margin-bottom: 10px;">Silver Rate: <span id="currentSilverRate" style="color: green;">{{ "%.2f"|format(admin_silver_rate) or '1000.00' }}</span> NPR/tola</h4>
+    <input type="number" id="silverRateAdmin" placeholder="Enter new silver rate" step="0.01" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 10px;">
+    <button class="btn small" onclick="updateSilverRate()" style="width: 100%; background-color: #007bff;">Update Silver Rate</button>
+    <p id="silverRateMessage" style="margin-top: 5px; font-size: 0.9em; color: green;"></p>
+  </div>
+</div>
+
+<script>
+function updateGoldRate() {
+    let rate = document.getElementById("goldRateAdmin").value;
+    if (!rate) {
+        showCustomAlert("Enter a gold rate first!");
+        return;
+    }
+    fetch("/update-gold-rate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rate: rate })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const msg = data.message || data.error;
+        document.getElementById("goldRateMessage").textContent = msg;
+        if (data.message) {
+            document.getElementById("currentGoldRate").textContent = parseFloat(rate).toFixed(2);
+        }
+    })
+    .catch(err => {
+        document.getElementById("goldRateMessage").textContent = "Error updating gold rate.";
+        console.error(err);
+    });
+}
+
+function updateSilverRate() {
+    let rate = document.getElementById("silverRateAdmin").value;
+    if (!rate) {
+        showCustomAlert("Enter a silver rate first!");
+        return;
+    }
+    fetch("/update-silver-rate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rate: rate })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const msg = data.message || data.error;
+        document.getElementById("silverRateMessage").textContent = msg;
+        if (data.message) {
+            document.getElementById("currentSilverRate").textContent = parseFloat(rate).toFixed(2);
+        }
+    })
+    .catch(err => {
+        document.getElementById("silverRateMessage").textContent = "Error updating silver rate.";
+        console.error(err);
+    });
+}
+
+// Custom Alert Modal (replace window.alert) - Copied from base.html (should be in base or a shared JS file)
+// For demonstration, kept here as well. Ideally, define once.
+function showCustomAlert(message) {
+    let alertModal = document.getElementById('customAlertDialog');
+    if (!alertModal) {
+        alertModal = document.createElement('div');
+        alertModal.id = 'customAlertDialog';
+        alertModal.style.cssText = `
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000; text-align: center; width: 300px; max-width: 90%; color: black;
+        `;
+        alertModal.innerHTML = `
+            <p id="customAlertMessage" style="margin-bottom: 20px;"></p>
+            <button onclick="document.getElementById('customAlertDialog').style.display='none'"
+                    style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                OK
+            </button>
+        `;
+        document.body.appendChild(alertModal);
+    }
+    document.getElementById('customAlertMessage').textContent = message;
+    alertModal.style.display = 'block';
+}
+</script>
+
+
 <h3>Shops</h3>
 <table class="table">
   <thead>
@@ -22,6 +117,8 @@
       <th>Shop</th>
       <th>Login ID</th>
       <th>Password</th>
+      <th>Gold Rate (NPR/Tola)</th>
+      <th>Silver Rate (NPR/Tola)</th>
       <th>Active</th>
       <th>Items</th>
       <th>Actions</th>
@@ -30,12 +127,14 @@
   <tbody>
     {% for s in shops %}
     <tr>
-      <td>{{ s.shop_name }}</td>
-      <td>{{ s.username }}</td>
-      <td>{{ s.plain_password }}</td>
-      <td>{{ "Yes" if s.active else "No" }}</td>
-      <td>{{ s.jewelries|length }}</td>
-      <td>
+      <td data-label="Shop">{{ s.shop_name }}</td>
+      <td data-label="Login ID">{{ s.username }}</td>
+      <td data-label="Password">{{ s.plain_password }}</td>
+      <td data-label="Gold Rate (NPR/Tola)">{{ "%.2f"|format(s.gold_rate_per_tola) }}</td>
+      <td data-label="Silver Rate (NPR/Tola)">{{ "%.2f"|format(s.silver_rate_per_tola) }}</td>
+      <td data-label="Active">{{ "Yes" if s.active else "No" }}</td>
+      <td data-label="Items">{{ s.jewelries|length }}</td>
+      <td data-label="Actions">
         {% if s.id != current_user.id %}
         <a class="btn small" href="{{ url_for('admin_toggle_shop', user_id=s.id) }}">
           {{ "Deactivate" if s.active else "Activate" }}
@@ -49,19 +148,23 @@
 </table>
 
 <h3>All Jewelry</h3>
+<div class="table-wrapper"> {# Added table-wrapper for consistent styling #}
 <table class="table">
-  <thead><tr><th>ID</th><th>Shop</th><th>Weight</th><th>Labor</th><th>Date</th><th>Action</th></tr></thead>
+  <thead><tr><th>ID</th><th>Shop</th><th>Material</th><th>Weight (Tola)</th><th>Labor</th><th>Sold</th><th>Date</th><th>Action</th></tr></thead>
   <tbody>
     {% for it in items %}
     <tr>
-      <td>{{ it.unique_id }}</td>
-      <td>{{ it.owner.shop_name }}</td>
-      <td>{{ "%.2f"|format(it.weight_g) }}</td>
-      <td>{{ "%.2f"|format(it.labor_cost) }}</td>
-      <td>{{ it.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
-      <td><a class="btn small danger" href="{{ url_for('admin_delete_item', item_id=it.id) }}">Delete</a></td>
+      <td data-label="ID">{{ it.formatted_id }}</td>
+      <td data-label="Shop">{{ it.owner.shop_name }}</td>
+      <td data-label="Material">{{ it.material_type | capitalize }}</td>
+      <td data-label="Weight (Tola)">{{ "%.2f"|format(it.weight_tola) }}</td>
+      <td data-label="Labor">{{ "%.2f"|format(it.labor_cost) }}</td>
+      <td data-label="Sold">{{ "Yes" if it.is_sold else "No" }}</td>
+      <td data-label="Date">{{ it.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      <td data-label="Action"><a class="btn small danger" href="{{ url_for('admin_delete_item', item_id=it.id) }}">Delete</a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+</div>
 {% endblock %}
