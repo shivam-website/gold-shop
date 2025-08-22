@@ -3,17 +3,24 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>{% block title %}GoldShop{% endblock %}</title>
+  <title>{% block title %}Gold & Silver Shop{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="brand"><a href="{{ url_for('index') }}">GoldShop</a></div>
-    <div class="links">
+  <nav class="navbar" id="navbar">
+    <div class="brand"><a href="{{ url_for('index') }}">Gold & Silver Shop</a></div>
+    <!-- Navbar Toggle Button for Mobile -->
+    <button class="navbar-toggle" id="navbarToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="links" id="navbarLinks">
       {% if current_user.is_authenticated %}
         <a href="{{ url_for('dashboard') }}">Dashboard</a>
         <a href="{{ url_for('add_jewelry') }}">Add Jewelry</a>
         <a href="{{ url_for('search') }}">Search by ID</a>
+        <a href="{{ url_for('sold_history') }}">Sold History</a>
         {% if current_user.is_admin %}
           <a href="{{ url_for('admin_dashboard') }}">Admin</a>
         {% endif %}
@@ -38,7 +45,53 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="footer">© {{ now().year if now else '' }} GoldShop MVP</footer>
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <footer class="footer">© {{ now().year if now else '' }} Gold & Silver Shop MVP</footer>
+  <!-- Custom Alert Modal Structure -->
+  <div id="customAlertDialog" style="display:none;"></div>
+
+  <script>
+    function showCustomAlert(message) {
+        let alertModal = document.getElementById('customAlertDialog');
+        if (!alertModal) {
+            alertModal = document.createElement('div');
+            alertModal.id = 'customAlertDialog';
+            alertModal.style.cssText = `
+                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 1000; text-align: center; width: 300px; max-width: 90%; color: black;
+            `;
+            alertModal.innerHTML = `
+                <p id="customAlertMessage" style="margin-bottom: 20px;"></p>
+                <button onclick="document.getElementById('customAlertDialog').style.display='none'"
+                        style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            document.body.appendChild(alertModal);
+        }
+        document.getElementById('customAlertMessage').textContent = message;
+        alertModal.style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navbar = document.getElementById('navbar');
+        const navbarLinks = document.getElementById('navbarLinks');
+
+        navbarToggle.addEventListener('click', function() {
+            navbar.classList.toggle('active');
+            navbarLinks.classList.toggle('active');
+        });
+
+        navbarLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (navbar.classList.contains('active')) {
+                    navbar.classList.remove('active');
+                    navbarLinks.classList.remove('active');
+                }
+            });
+        });
+    });
+  </script>
 </body>
 </html>
