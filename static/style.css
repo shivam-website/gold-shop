@@ -1,193 +1,338 @@
 :root {
-    --bg: #0b0d10;
-    --card: #12151a;
-    --text: #f2f5f8;
-    --muted: #96a0aa;
-    --accent: #14b8a6;
-    --danger: #e11d48;
-    --border: #1f242b;
+    --bg: #0d1116; /* Darker background for modern feel */
+    --card: #161b22; /* Slightly lighter card background */
+    --text: #c9d1d9; /* Lighter text for contrast */
+    --muted: #8b949e; /* Adjusted muted text color */
+    --accent: #238636; /* GitHub-like green accent */
+    --danger: #da3633; /* Stronger red for danger */
+    --border: #30363d; /* Darker, more subtle border */
+    --success: #2ea043; /* Added a success color */
+    --info: #54aeff; /* Added an info color */
+    --warning: #d29922; /* Added a warning color */
 
     /* Invoice overrides */
-    --invoice-bg: #fff;
-    --invoice-text: #000;
+    --invoice-bg: #ffffff; /* White background for print/invoice */
+    --invoice-text: #24292f; /* Dark text for print/invoice */
 }
 
 /* Global resets and box-sizing */
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    line-height: 1.6;
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    display: flex;
+    flex-direction: column;
+}
 
 /* Main containers for layout */
-.container { 
-    max-width: 1000px; 
-    margin: 24px auto; 
-    padding: 0 16px; 
+.container {
+    max-width: 1200px; /* Increased max-width */
+    margin: 30px auto; /* Slightly more margin */
+    padding: 0 20px; /* Increased padding */
+    flex-grow: 1; /* Allows container to grow and push footer down */
 }
-.footer { 
-    text-align: center; 
-    color: var(--muted); 
-    padding: 24px; 
-    border-top: 1px solid var(--border); 
-    margin-top: 40px; 
+.footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+    font-size: 0.9em;
 }
 
 /* Navbar */
-.navbar { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 12px 20px; 
-    border-bottom: 1px solid var(--border); 
-    position: sticky; 
-    top: 0; 
-    background: rgba(11,13,16,.8); 
-    backdrop-filter: blur(8px); 
-    flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px; /* Increased padding */
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg); /* Solid background for sticky nav */
+    z-index: 1000;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
-.navbar a { 
-    color: var(--text); 
-    text-decoration: none; 
-    margin-left: 12px; 
+.navbar a {
+    color: var(--text);
+    text-decoration: none;
+    margin-left: 18px; /* Increased spacing */
+    padding: 8px 12px; /* Added padding for better click/tap area */
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
-.brand a { 
-    font-weight: 700; 
-    letter-spacing: .5px; 
+.navbar a:hover {
+    background-color: rgba(var(--accent-rgb), 0.1); /* Subtle hover effect */
+    color: var(--accent);
+}
+.brand a {
+    font-weight: 700;
+    letter-spacing: .8px;
+    font-size: 1.4em; /* Larger brand text */
+    color: var(--accent);
+    margin-left: 0; /* No left margin for brand */
+}
+.navbar .links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allow links to wrap */
 }
 
+
 /* Hero & CTA */
-.hero { 
-    background: linear-gradient(180deg, rgba(20,184,166,.08), transparent); 
-    border: 1px solid var(--border); 
-    padding: 32px; 
-    border-radius: 16px; 
+.hero {
+    background: linear-gradient(135deg, rgba(35,134,54,0.1), transparent); /* More defined gradient */
+    border: 1px solid var(--border);
+    padding: 40px; /* Increased padding */
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 40px;
 }
-.cta .btn { 
-    margin-right: 12px; 
-    margin-bottom: 8px; /* Added for better mobile stacking */
+.hero h1 {
+    font-size: 2.8em; /* Larger heading */
+    margin-bottom: 15px;
+    color: var(--text);
+}
+.hero p {
+    font-size: 1.2em;
+    color: var(--muted);
+    margin-bottom: 30px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.cta .btn {
+    margin: 0 10px 10px; /* Adjusted margin for centered buttons */
+    min-width: 150px; /* Minimum width for buttons */
 }
 
 /* Buttons */
-.btn { 
-    display: inline-block; 
-    padding: 10px 16px; 
-    background: var(--accent); 
-    color: #001010; 
-    border: none; 
-    border-radius: 10px; 
-    cursor: pointer; 
-    text-decoration: none; 
-    font-weight: 600; 
+.btn {
+    display: inline-flex; /* Use flex for centering content */
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px; /* More generous padding */
+    background: var(--accent);
+    color: #ffffff; /* White text for better contrast on accent */
+    border: none;
+    border-radius: 8px; /* Slightly more rounded */
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1em;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-.btn.outline { 
-    background: transparent; 
-    color: var(--text); 
-    border: 1px solid var(--accent); 
+.btn:hover {
+    background-color: #2ea043; /* Slightly darker on hover */
+    transform: translateY(-1px); /* Subtle lift effect */
 }
-.btn.small { 
-    padding: 6px 10px; 
-    font-size: 14px; 
+.btn:active {
+    transform: translateY(0); /* Press effect */
 }
-.btn.danger { 
-    background: var(--danger); 
-    color: #fff; 
+.btn.outline {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    box-shadow: none;
+}
+.btn.outline:hover {
+    background-color: rgba(var(--accent-rgb), 0.08); /* Light background on hover */
+}
+.btn.small {
+    padding: 8px 14px;
+    font-size: 0.9em;
+    border-radius: 6px;
+}
+.btn.danger {
+    background: var(--danger);
+}
+.btn.danger:hover {
+    background-color: #cb2431; /* Darker red on hover */
+}
+.btn.success { /* Added success button style */
+    background: var(--success);
+}
+.btn.success:hover {
+    background-color: #278d38;
+}
+.btn.info { /* Added info button style */
+    background: var(--info);
+}
+.btn.info:hover {
+    background-color: #438cdb;
 }
 
+
 /* Forms */
-.form { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 12px; 
-    background: var(--card); 
-    padding: 16px; 
-    border: 1px solid var(--border); 
-    border-radius: 12px; 
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Increased gap */
+    background: var(--card);
+    padding: 25px; /* Increased padding */
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 500px; /* Constrain form width */
+    margin: 0 auto 30px; /* Center form */
 }
-.form input, .form textarea { 
-    width: 100%; 
-    padding: 10px; 
-    border-radius: 8px; 
-    border: 1px solid var(--border); 
-    background: #0d1116; 
-    color: var(--text); 
+.form h2 {
+    color: var(--text);
+    margin-bottom: 20px;
+    text-align: center;
 }
-.form label { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 6px; 
-    color: var(--muted); 
+.form input,
+.form textarea,
+.form select { /* Added select for dropdowns */
+    width: 100%;
+    padding: 12px; /* More padding */
+    border-radius: 8px; /* More rounded */
+    border: 1px solid var(--border);
+    background: #0d1116; /* Dark input background */
+    color: var(--text);
+    font-size: 1em;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.3);
+}
+.form label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Increased gap */
+    color: var(--muted);
+    font-size: 0.95em;
+    font-weight: 500;
+}
+.form-select { /* Specific style for select fields */
+    appearance: none; /* Remove default arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%2396a0aa' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 10px;
+    padding-right: 30px; /* Make space for custom arrow */
+}
+
 
 /* Tables */
 .table-wrapper {
     overflow-x: auto; /* Added a wrapper for responsive tables */
+    margin-bottom: 20px;
+    border: 1px solid var(--border); /* Added border to wrapper */
+    border-radius: 12px; /* Rounded corners for wrapper */
 }
-.table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    background: var(--card); 
-    border: 1px solid var(--border); 
-    border-radius: 12px; 
-    overflow: hidden; 
-    white-space: nowrap; /* Prevents text from wrapping inside cells */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    /* Removed border here, moved to wrapper */
+    border-radius: 12px;
+    overflow: hidden;
+    /* white-space: nowrap; Removed, better to let text wrap and use overflow-x on wrapper */
+    font-size: 0.95em;
 }
-.table th, .table td { 
-    padding: 10px; 
-    border-bottom: 1px solid var(--border); 
-    text-align: left; 
+.table th, .table td {
+    padding: 12px 15px; /* More padding */
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
 }
-.table thead { 
-    background: #0f1318; 
+.table thead {
+    background: #0f1318;
 }
+.table tbody tr:last-child td {
+    border-bottom: none; /* No border for the last row */
+}
+.table tbody tr:hover {
+    background-color: #1a1e26; /* Subtle row hover effect */
+}
+
 
 /* Toolbar & flash messages */
-.toolbar { 
-    display: flex; 
-    gap: 12px; 
-    margin-bottom: 16px; 
+.toolbar {
+    display: flex;
+    gap: 15px; /* Increased gap */
+    margin-bottom: 25px;
     flex-wrap: wrap;
+    justify-content: flex-start; /* Align to start */
 }
-.flashbox { 
-    margin-bottom: 16px; 
+.flashbox {
+    margin-bottom: 25px;
 }
-.flash { 
-    padding: 10px; 
-    border-radius: 8px; 
-    margin-bottom: 8px; 
-    background: #0f1318; 
-    border: 1px solid var(--border); 
+.flash {
+    padding: 12px 15px; /* More padding */
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: #0f1318;
+    border: 1px solid var(--border);
+    font-size: 0.95em;
+    display: flex; /* Use flex for alignment */
+    align-items: center;
 }
-.flash.success { 
-    border-color: #14532d; 
+.flash.success {
+    border-color: var(--success);
+    color: var(--success);
+    background-color: rgba(var(--success-rgb), 0.1);
 }
-.flash.danger { 
-    border-color: #7f1d1d; 
+.flash.danger {
+    border-color: var(--danger);
+    color: var(--danger);
+    background-color: rgba(var(--danger-rgb), 0.1);
 }
-.flash.info { 
-    border-color: #1e3a8a; 
+.flash.info {
+    border-color: var(--info);
+    color: var(--info);
+    background-color: rgba(var(--info-rgb), 0.1);
 }
-.flash.warning { 
-    border-color: #854d0e; 
+.flash.warning {
+    border-color: var(--warning);
+    color: var(--warning);
+    background-color: rgba(var(--warning-rgb), 0.1);
 }
+
 
 /* Cards & thumbnails */
-.card { 
-    background: var(--card); 
-    border: 1px solid var(--border); 
-    border-radius: 12px; 
-    padding: 16px; 
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px; /* Increased padding */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
 }
-.thumb { 
-    width: 60px; 
-    height: 60px; 
-    object-fit: cover; 
-    border-radius: 8px; 
-    border: 1px solid var(--border); 
+.card p {
+    margin-bottom: 8px;
+}
+.card h3 {
+    color: var(--accent);
+    margin-bottom: 15px;
+}
+.thumb {
+    width: 70px; /* Slightly larger thumbnail */
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
 }
 
-/* Invoice specific */
+/* Invoice specific - already quite responsive, just ensuring consistency */
 .invoice-container {
     background: var(--invoice-bg);
     color: var(--invoice-text);
-    padding: 24px;
+    padding: 30px; /* Consistent padding */
     border-radius: 12px;
     max-width: 800px;
     margin: 40px auto;
@@ -198,7 +343,30 @@ body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 syst
 .invoice-container p,
 .invoice-container span,
 .invoice-container td {
-    color: var(--invoice-text);
+    color: var(--invoice-text); /* Ensure black text on white invoice background */
+}
+.invoice-table th, .invoice-table td {
+    border-color: #e0e0e0; /* Lighter border for invoice table */
+}
+.invoice-table th {
+    background: #f8f8f8; /* Lighter background for invoice table headers */
+}
+
+/* Custom Alert Modal styles (for consistency) */
+#customAlertDialog {
+    background-color: var(--card);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    color: var(--text); /* Ensure text color matches theme */
+}
+#customAlertMessage {
+    color: var(--text); /* Ensure message text color matches theme */
+}
+#customAlertDialog .btn {
+    background-color: var(--accent); /* Consistent button style */
+    color: #ffffff;
 }
 
 /*
@@ -206,46 +374,190 @@ body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 syst
     -----------------------------------
 */
 
-/* Mobile devices (phones) */
+/* Mobile devices (phones up to 768px) */
 @media (max-width: 768px) {
-    /* Adjust global container padding for better spacing */
     .container {
-        padding: 0 12px;
+        margin: 20px auto;
+        padding: 0 15px;
     }
 
-    /* Stack navbar items on top of each other */
+    /* Navbar adjustments */
     .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding-bottom: 12px;
+        flex-direction: row; /* Keep brand and toggle on one row */
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
     }
-
-    /* Adjust navbar links on mobile */
     .navbar .brand {
-        margin-bottom: 8px;
+        margin-bottom: 0; /* Remove bottom margin */
+        font-size: 1.2em;
     }
-    .navbar .brand a {
-        margin-left: 0;
+    .navbar .links {
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        width: 100%;
+        align-items: flex-start;
+        /* Animation properties */
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    .navbar.active .links {
+        display: flex; /* Show when active */
+        max-height: 300px; /* A value larger than content height */
+        transition: max-height 0.3s ease-in;
     }
     .navbar a {
-        margin: 4px 0;
+        margin: 3px 0; /* Reduced vertical margin between links */
+        padding: 6px 10px; /* Reduced padding for links */
+        width: 100%; /* Full width nav links */
+        text-align: left;
+        border: 1px solid transparent; /* Default transparent border */
+        transition: border-color 0.2s ease;
     }
-    
-    /* Make the hero section padding a bit smaller for tight screens */
-    .hero {
-        padding: 24px;
+    .navbar a:hover,
+    .navbar a:focus {
+        border-color: var(--border);
     }
 
-    /* Stack toolbar items vertically */
+    /* Navbar Toggle Button */
+    .navbar-toggle {
+        display: block; /* Show toggle button on mobile */
+        background: none;
+        border: none;
+        color: var(--text);
+        font-size: 1.5em; /* Size of hamburger icon */
+        cursor: pointer;
+        padding: 5px;
+        z-index: 1001; /* Ensure it's above other elements if needed */
+    }
+    .navbar-toggle span {
+        display: block;
+        width: 25px;
+        height: 3px;
+        background-color: var(--text);
+        margin: 5px 0;
+        transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    }
+    .navbar.active .navbar-toggle span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+    .navbar.active .navbar-toggle span:nth-child(2) {
+        opacity: 0;
+    }
+    .navbar.active .navbar-toggle span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+
+    /* Hero section */
+    .hero {
+        padding: 30px 20px;
+        margin-bottom: 30px;
+    }
+    .hero h1 {
+        font-size: 2em;
+    }
+    .hero p {
+        font-size: 1em;
+    }
+    .cta .btn {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    /* Form adjustments */
+    .form {
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    .form h2 {
+        font-size: 1.8em;
+    }
+
+    /* Toolbar for mobile */
     .toolbar {
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
     }
-    
-    /* Adjust button margins for better stacking on mobile */
-    .cta .btn {
-        margin-right: 0;
+    .toolbar .btn {
         width: 100%;
-        text-align: center;
+    }
+
+    /* Responsive table for dashboard/admin */
+    .table-wrapper {
+        border-left: 1px solid var(--border); /* Add border on left/right for mobile */
+        border-right: 1px solid var(--border);
+    }
+    .table {
+        border-radius: 0; /* No border-radius for table itself on mobile */
+        border: none;
+    }
+    .table thead {
+        display: none; /* Hide table headers */
+    }
+    .table, .table tbody, .table tr, .table td {
+        display: block; /* Make table elements stack */
+        width: 100%;
+    }
+    .table tr {
+        margin-bottom: 15px;
+        border: 1px solid var(--border); /* Border for each row */
+        border-radius: 8px; /* Rounded corners for rows */
+    }
+    .table td {
+        text-align: right;
+        padding-left: 50%; /* Space for pseudo-element label */
+        position: relative;
+        border-bottom: 1px solid var(--border);
+    }
+    .table td:last-child {
+        border-bottom: none;
+    }
+    .table td::before {
+        content: attr(data-label); /* Show original header as label */
+        position: absolute;
+        left: 15px;
+        width: calc(50% - 30px);
+        text-align: left;
+        font-weight: 600;
+        color: var(--muted);
+        /* Removed white-space: nowrap; to allow labels to wrap */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Adjust specific table columns (e.g., photo and action) if needed */
+    .table td img.thumb {
+        margin-left: auto; /* Center image if needed */
+        margin-right: 0;
+    }
+    .table td form {
+        display: block; /* Make form fill width */
+        width: 100%;
+        text-align: right;
+    }
+    .table td .btn.small {
+        margin-top: 5px; /* Space between buttons if stacked */
+    }
+
+    /* Rate update section */
+    .rate-update-section {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    .rate-update-section > div {
+        min-width: unset;
+        width: 100%;
+    }
+    .rate-update-section h3 {
+        font-size: 1.1em;
+    }
+    .rate-update-section input,
+    .rate-update-section button {
+        padding: 10px;
+        font-size: 0.95em;
     }
 }
