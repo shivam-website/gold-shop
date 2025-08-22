@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Sold Items History{% endblock %}
+
+{% block content %}
+<h2>Sold Items History</h2>
+
+{% if items %}
+<div class="table-wrapper">
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th><th>Material</th><th>Weight (Tola)</th><th>Labor</th><th>Sold Date</th><th>Photo</th><th>Invoice</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td data-label="ID">{{ it.formatted_id }}</td>
+      <td data-label="Material">{{ it.material_type | capitalize }}</td>
+      <td data-label="Weight (Tola)">{{ "%.2f"|format(it.weight_tola) }}</td>
+      <td data-label="Labor">{{ "%.2f"|format(it.labor_cost) }}</td>
+      <td data-label="Sold Date">{{ it.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      <td data-label="Photo">
+        {% if it.photo_path %}
+          <img src="/{{ it.photo_path }}" alt="photo" class="thumb" style="max-width:60px; max-height:60px; object-fit:cover; border-radius:8px;">
+        {% else %}-{% endif %}
+      </td>
+      {# FIX: Changed uid=it.unique_id to item_id=it.id #}
+      <td data-label="Invoice"><a class="btn small" href="{{ url_for('invoice', item_id=it.id) }}" target="_blank">Open</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+<p>No items have been marked as sold yet.</p>
+{% endif %}
+{% endblock %}
