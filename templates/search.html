@@ -4,20 +4,28 @@
 <h2>Search Jewelry by ID</h2>
 <form method="post" class="form">
   {{ form.hidden_tag() }}
-  <label>Jewelry ID {{ form.unique_id(size=24, placeholder="e.g., JW-AB12CD34") }}</label>
+  <label>Jewelry ID {{ form.jewelry_id_string(size=24, placeholder="e.g., JW-0001") }}</label>
   {{ form.submit(class_="btn") }}
 </form>
 
 {% if item %}
   <div class="card">
     <h3>Result</h3>
-    <p><strong>ID:</strong> {{ item.unique_id }}</p>
-    <p><strong>Weight:</strong> {{ "%.2f"|format(item.weight_g) }} g</p>
-    <p><strong>Labor:</strong> {{ "%.2f"|format(item.labor_cost) }}</p>
-    {% if rate %}
-      <p><strong>Today’s Gold Rate:</strong> {{ "%.2f"|format(rate) }} NPR/g</p>
+    <p><strong>ID:</strong> {{ item.formatted_id }}</p>
+    <p><strong>Material:</strong> {{ item.material_type | capitalize }}</p>
+    <p><strong>Weight:</strong> {{ "%.2f"|format(item.weight_tola) }} Tola</p>
+    <p><strong>Labor:</strong> {{ "%.2f"|format(item.labor_cost) }} NPR</p>
+    {% if item.is_sold %}
+      <p style="color: red; font-weight: bold;">*** SOLD ***</p>
+    {% endif %}
+    {% if price %}
+      {% if item.material_type == 'gold' %}
+        <p><strong>{{ item.owner.shop_name }}'s Gold Rate:</strong> {{ "%.2f"|format(gold_rate) }} NPR/Tola</p>
+      {% elif item.material_type == 'silver' %}
+        <p><strong>{{ item.owner.shop_name }}'s Silver Rate:</strong> {{ "%.2f"|format(silver_rate) }} NPR/Tola</p>
+      {% endif %}
       <p><strong>Final Price:</strong> {{ "%.2f"|format(price) }} NPR</p>
-      <a class="btn" href="{{ url_for('invoice', uid=item.unique_id) }}" target="_blank">Open Invoice</a>
+      <a class="btn" href="{{ url_for('invoice', item_id=item.id) }}" target="_blank">Open Invoice</a>
     {% endif %}
   </div>
 {% endif %}
