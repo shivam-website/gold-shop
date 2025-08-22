@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Invoice {{ item.unique_id }}</title>
+  <title>Invoice {{ item.formatted_id }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <style>
     /* Hide elements on print */
@@ -20,6 +20,7 @@
       border: 1px solid #ddd;
       border-radius: 12px;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu;
+      box-sizing: border-box; /* Ensure padding is included in the width */
     }
 
     .invoice-container h1, .invoice-container h2, .invoice-container h3 {
@@ -76,39 +77,188 @@
       text-decoration: none;
       margin-top: 16px;
     }
+
+    .discount-section {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background-color: #fcfcfc;
+      display: flex; /* Use flexbox for better alignment */
+      flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+      align-items: center; /* Vertically align items */
+      gap: 10px; /* Space between elements */
+    }
+
+    .discount-section label {
+      flex: 1 1 100%; /* Label takes full width on small screens */
+      margin-bottom: 0; /* Remove default margin */
+      font-size: 1em; /* Adjust font size */
+      color: #333; /* Darker color for readability */
+    }
+
+    .discount-input {
+      flex: 2 1 150px; /* Input grows but has a minimum width */
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-sizing: border-box; /* Include padding in width */
+      font-size: 0.9em;
+    }
+
+    .discount-button {
+      flex: 1 1 auto; /* Button takes available space, but can shrink */
+      padding: 8px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9em;
+      white-space: nowrap; /* Prevent button text from wrapping */
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 600px) {
+      .invoice-container {
+        margin: 20px 10px; /* Reduced margin for mobile */
+        padding: 20px; /* Reduced padding */
+        border-radius: 8px; /* Slightly smaller border-radius */
+      }
+
+      .invoice-container h1 {
+        font-size: 24px; /* Adjust heading size */
+      }
+
+      .invoice-container p {
+        font-size: 14px; /* Adjust paragraph size */
+      }
+
+      .invoice-table th, .invoice-table td {
+        padding: 8px; /* Reduced table padding */
+        font-size: 14px; /* Adjusted table font size */
+      }
+      
+      /* Responsive table: stack headers and data */
+      .invoice-table thead {
+        display: none; /* Hide table headers on small screens */
+      }
+
+      .invoice-table tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+
+      .invoice-table td {
+        display: block;
+        text-align: right;
+        border: none; /* Remove individual cell borders */
+        border-bottom: 1px solid #eee; /* Add separator between rows */
+        position: relative;
+        padding-left: 50%; /* Make space for pseudo-element header */
+      }
+      
+      .invoice-table td:last-child {
+          border-bottom: none; /* No border for the last cell in a row */
+      }
+
+      .invoice-table td::before {
+        content: attr(data-label); /* Use data-label for the header */
+        position: absolute;
+        left: 10px;
+        width: calc(50% - 20px);
+        padding-right: 10px;
+        white-space: normal; /* Allow labels to wrap */
+        text-align: left;
+        font-weight: 600;
+      }
+
+      .total {
+        font-size: 16px; /* Adjust total font size */
+        text-align: center; /* Center total for better mobile display */
+        margin-top: 20px;
+      }
+
+      .btn {
+        width: 100%; /* Full width buttons */
+        box-sizing: border-box;
+        margin-top: 10px;
+      }
+
+      .discount-section {
+        flex-direction: column; /* Stack discount elements vertically */
+        align-items: stretch; /* Stretch items to full width */
+      }
+
+      .discount-section label,
+      .discount-input,
+      .discount-button {
+        flex: none; /* Remove flex sizing */
+        width: 100%; /* Full width for inputs and buttons */
+        margin-right: 0;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="invoice-container">
     <h1>Invoice</h1>
-    <p><strong>Shop:</strong> {{ item.owner.shop_name }} ({{ item.owner.email }})</p>
+    <p><strong>Shop:</strong> {{ item.owner.shop_name }}</p>
     <p><strong>Date:</strong> {{ item.created_at.strftime("%Y-%m-%d %H:%M") }}</p>
+    {% if item.is_sold %}
+      <p style="color: red; font-weight: bold;">*** SOLD ***</p>
+    {% endif %}
     <hr>
 
     <table class="invoice-table">
       <tr>
-        <th>Jewelry ID</th>
-        <td>{{ item.unique_id }}</td>
+        <th data-label="Jewelry ID">Jewelry ID</th>
+        <td data-label="Jewelry ID">{{ item.formatted_id }}</td>
       </tr>
       <tr>
-        <th>Description</th>
-        <td>{{ item.description or "-" }}</td>
+        <th data-label="Description">Description</th>
+        <td data-label="Description">{{ item.description or "-" }}</td>
       </tr>
       <tr>
-        <th>Weight</th>
-        <td>{{ "%.2f"|format(item.weight_g) }} g</td>
+        <th data-label="Material Type">Material Type</th>
+        <td data-label="Material Type">{{ item.material_type | capitalize }}</td>
       </tr>
       <tr>
-        <th>Labor Cost</th>
-        <td>{{ "%.2f"|format(item.labor_cost) }} NPR</td>
+        <th data-label="Weight">Weight</th>
+        <td data-label="Weight">{{ "%.2f"|format(item.weight_tola) }} Tola</td>
       </tr>
       <tr>
-        <th>Gold Rate (per g)</th>
-        <td>{{ "%.2f"|format(rate) }} NPR</td>
+        <th data-label="Labor Cost">Labor Cost</th>
+        <td data-label="Labor Cost">{{ "%.2f"|format(item.labor_cost) }} NPR</td>
       </tr>
+      <tr>
+        <th data-label="{{ item.material_type | capitalize }} Rate (per Tola)">{{ item.material_type | capitalize }} Rate (per Tola)</th>
+        <td data-label="{{ item.material_type | capitalize }} Rate (per Tola)">{{ "%.2f"|format(material_rate) }} NPR</td>
+      </tr>
+      <tr>
+        <th data-label="Price Before Discount">Price Before Discount</th>
+        <td data-label="Price Before Discount">{{ "%.2f"|format(price_before_discount) }} NPR</td>
+      </tr>
+      {% if discount_amount > 0 %}
+        <tr>
+          <th data-label="Discount Applied">Discount Applied</th>
+          <td data-label="Discount Applied">{{ "%.2f"|format(discount_amount) }} NPR</td>
+        </tr>
+      {% endif %}
     </table>
 
-    <p class="total">Total: {{ "%.2f"|format(final_price) }} NPR</p>
+    <p class="total">Final Price: {{ "%.2f"|format(final_price) }} NPR</p>
+
+    <div class="discount-section no-print">
+      <form method="get" action="{{ url_for('invoice', item_id=item.id) }}">
+        <label for="discount">Apply Discount (NPR):</label>
+        <input type="number" id="discount" name="discount" step="0.01" value="{{ "%.2f"|format(discount_amount) }}" class="discount-input">
+        <button type="submit" class="discount-button">See Final Invoice</button>
+      </form>
+    </div>
+
     <button class="btn no-print" onclick="window.print()">Print</button>
   </div>
 </body>
