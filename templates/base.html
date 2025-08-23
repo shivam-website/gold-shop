@@ -3,14 +3,120 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>{% block title %}Gold & Silver Shop{% endblock %}</title>
+  <title>Gold & Silver Shop</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" type="image/png" href="/static/images/icon.png" />
+  <link rel="icon" type="image/png" href="/static/images/icon.png" />
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#FFD700">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gold & Silver Shop">
+  <link rel="apple-touch-icon" href="/static/images/icon.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <style>
+    /* Add to Home Screen Button Styles */
+    .add-to-home-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #FFD700, #D4AF37);
+      color: #000;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      animation: pulse 2s infinite;
+    }
+    
+    .add-to-home-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+    
+    .add-to-home-btn:active {
+      transform: translateY(1px);
+    }
+    
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+      50% {
+        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+      }
+      100% {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+    }
+    
+    /* Installation Instructions Modal */
+    .install-instructions {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .install-content {
+      background-color: white;
+      padding: 25px;
+      border-radius: 12px;
+      max-width: 90%;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    }
+    
+    .install-content h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    
+    .install-content ol {
+      text-align: left;
+      padding-left: 20px;
+    }
+    
+    .install-content li {
+      margin-bottom: 10px;
+    }
+    
+    .close-install {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    /* Platform-specific instructions */
+    .android-instructions, .ios-instructions {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <!-- Navbar -->
   <nav class="navbar" id="navbar">
     <div class="brand"><a href="{{ url_for('index') }}">Gold & Silver Shop</a></div>
-    <!-- Navbar Toggle Button for Mobile -->
     <button class="navbar-toggle" id="navbarToggle">
       <span></span>
       <span></span>
@@ -33,12 +139,13 @@
     </div>
   </nav>
 
+  <!-- Main Content -->
   <main class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <div class="flashbox">
           {% for cat, msg in messages %}
-          <div class="flash {{ cat }}">{{ msg }}</div>
+            <div class="flash {{ cat }}">{{ msg }}</div>
           {% endfor %}
         </div>
       {% endif %}
@@ -46,54 +153,196 @@
     {% block content %}{% endblock %}
   </main>
 
+  <!-- Footer -->
   <footer class="footer">© {{ now().year if now else '' }} Gold & Silver Shop MVP</footer>
-  <!-- Custom Alert Modal Structure -->
+
+  <!-- Custom Alert Modal -->
   <div id="customAlertDialog" style="display:none;"></div>
 
+  <!-- Add to Home Screen Button -->
+  <button id="addHomeBtn" class="add-to-home-btn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 16L12 8" stroke="black" stroke-width="2" stroke-linecap="round"/>
+      <path d="M8 12L16 12" stroke="black" stroke-width="2" stroke-linecap="round"/>
+      <path d="M19 10V17.5C19 18.8807 17.8807 20 16.5 20H7.5C6.11929 20 5 18.8807 5 17.5V10" stroke="black" stroke-width="2"/>
+      <path d="M10 6H14" stroke="black" stroke-width="2" stroke-linecap="round"/>
+      <path d="M12 6L12 4" stroke="black" stroke-width="2" stroke-linecap="round"/>
+      <path d="M3 10L5.5 7.5" stroke="black" stroke-width="2"/>
+      <path d="M21 10L18.5 7.5" stroke="black" stroke-width="2"/>
+      <path d="M12 10L5 10" stroke="black" stroke-width="2"/>
+      <path d="M19 10L12 10" stroke="black" stroke-width="2"/>
+    </svg>
+    Install App
+  </button>
+
+  <!-- Installation Instructions Modal -->
+  <div id="installInstructions" class="install-instructions">
+    <div class="install-content">
+      <h3>Install App</h3>
+      <div id="androidInstructions" class="android-instructions">
+        <ol>
+          <li>Tap the <strong>⋮</strong> (menu) icon in the top-right corner of your browser</li>
+          <li>Select <strong>"Add to Home screen"</strong> from the menu</li>
+          <li>Confirm by tapping <strong>"Add"</strong> in the dialog</li>
+        </ol>
+      </div>
+      <div id="iosInstructions" class="ios-instructions">
+        <ol>
+          <li>Tap the <strong>⬆</strong> (share) icon at the bottom of your Safari browser</li>
+          <li>Scroll down and select <strong>"Add to Home Screen"</strong></li>
+          <li>Tap <strong>"Add"</strong> in the top-right corner</li>
+        </ol>
+      </div>
+      <button class="close-install">Got It!</button>
+    </div>
+  </div>
+
   <script>
-    function showCustomAlert(message) {
-        let alertModal = document.getElementById('customAlertDialog');
-        if (!alertModal) {
-            alertModal = document.createElement('div');
-            alertModal.id = 'customAlertDialog';
-            alertModal.style.cssText = `
-                position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-                background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                z-index: 1000; text-align: center; width: 300px; max-width: 90%; color: black;
-            `;
-            alertModal.innerHTML = `
-                <p id="customAlertMessage" style="margin-bottom: 20px;"></p>
-                <button onclick="document.getElementById('customAlertDialog').style.display='none'"
-                        style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                    OK
-                </button>
-            `;
-            document.body.appendChild(alertModal);
-        }
-        document.getElementById('customAlertMessage').textContent = message;
-        alertModal.style.display = 'block';
+    // Detect mobile devices and platform
+    function isMobileDevice() {
+      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    function isIOS() {
+      return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+    
+    function isAndroid() {
+      return /Android/i.test(navigator.userAgent);
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const navbarToggle = document.getElementById('navbarToggle');
-        const navbar = document.getElementById('navbar');
-        const navbarLinks = document.getElementById('navbarLinks');
+    // Custom Alert
+    function showCustomAlert(message) {
+      let alertModal = document.getElementById('customAlertDialog');
+      if (!alertModal) {
+        alertModal = document.createElement('div');
+        alertModal.id = 'customAlertDialog';
+        alertModal.style.cssText = `
+          position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+          background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+          z-index: 1000; text-align: center; width: 300px; max-width: 90%; color: black;
+        `;
+        alertModal.innerHTML = `
+          <p id="customAlertMessage" style="margin-bottom: 20px;"></p>
+          <button onclick="document.getElementById('customAlertDialog').style.display='none'"
+                  style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            OK
+          </button>
+        `;
+        document.body.appendChild(alertModal);
+      }
+      document.getElementById('customAlertMessage').textContent = message;
+      alertModal.style.display = 'block';
+    }
 
-        navbarToggle.addEventListener('click', function() {
-            navbar.classList.toggle('active');
-            navbarLinks.classList.toggle('active');
-        });
+    // Navbar toggle
+    document.addEventListener('DOMContentLoaded', () => {
+      const navbarToggle = document.getElementById('navbarToggle');
+      const navbar = document.getElementById('navbar');
+      const navbarLinks = document.getElementById('navbarLinks');
 
-        navbarLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navbar.classList.contains('active')) {
-                    navbar.classList.remove('active');
-                    navbarLinks.classList.remove('active');
-                }
-            });
+      navbarToggle.addEventListener('click', () => {
+        navbar.classList.toggle('active');
+        navbarLinks.classList.toggle('active');
+      });
+
+      navbarLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (navbar.classList.contains('active')) {
+            navbar.classList.remove('active');
+            navbarLinks.classList.remove('active');
+          }
         });
+      });
+    });
+
+    // PWA Installation Logic
+    window.addEventListener('load', () => {
+      const addHomeBtn = document.getElementById('addHomeBtn');
+      const installInstructions = document.getElementById('installInstructions');
+      const androidInstructions = document.getElementById('androidInstructions');
+      const iosInstructions = document.getElementById('iosInstructions');
+      const closeInstallBtn = document.querySelector('.close-install');
+      
+      // Close instructions modal
+      closeInstallBtn.addEventListener('click', () => {
+        installInstructions.style.display = 'none';
+      });
+      
+      // Only show on mobile devices
+      if (!isMobileDevice()) {
+        addHomeBtn.style.display = 'none';
+        return;
+      }
+      
+      let deferredPrompt;
+      
+      // Listen for beforeinstallprompt event
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        // Show the install button
+        addHomeBtn.style.display = 'flex';
+        
+        // Set a timeout to hide the button after 30 seconds
+        setTimeout(() => {
+          if (addHomeBtn.style.display === 'flex') {
+            addHomeBtn.style.display = 'none';
+          }
+        }, 30000);
+      });
+      
+      // Handle button click
+      addHomeBtn.addEventListener('click', async () => {
+        // If we have the deferredPrompt available, use it
+        if (deferredPrompt) {
+          // Show the install prompt
+          deferredPrompt.prompt();
+          
+          // Wait for the user to respond to the prompt
+          const { outcome } = await deferredPrompt.userChoice;
+          
+          if (outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+            addHomeBtn.style.display = 'none';
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          
+          // Clear the saved prompt since it can't be used again
+          deferredPrompt = null;
+        } else {
+          // Show platform-specific installation instructions
+          if (isIOS()) {
+            iosInstructions.style.display = 'block';
+            androidInstructions.style.display = 'none';
+          } else if (isAndroid()) {
+            androidInstructions.style.display = 'block';
+            iosInstructions.style.display = 'none';
+          } else {
+            // Generic instructions for other platforms
+            androidInstructions.style.display = 'block';
+            iosInstructions.style.display = 'none';
+          }
+          
+          installInstructions.style.display = 'flex';
+        }
+      });
+      
+      // Listen for app installation
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        addHomeBtn.style.display = 'none';
+        deferredPrompt = null;
+      });
+      
+      // Check if the app is already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        addHomeBtn.style.display = 'none';
+      }
     });
   </script>
 </body>
 </html>
-
